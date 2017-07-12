@@ -1,7 +1,10 @@
 require 'HTTParty'
 require 'json'
+require_relative 'roadmap'
+
 class Kele
   include HTTParty
+  include Roadmap
 
   def initialize(email, password)
     @base_url = "https://www.bloc.io/api/v1"
@@ -28,9 +31,5 @@ class Kele
     mentor_availability = JSON.parse(response.body)
   end
 
-  def get_roadmap
-    url = @base_url+"/roadmaps/#{@roadmap_id}"
-    response = self.class.get(url, headers: { "authorization" => @auth_token }, body: {id: @roadmap_id})
-    roadmap = JSON.parse(response.body)
-  end
+
 end
