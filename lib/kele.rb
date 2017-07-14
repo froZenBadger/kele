@@ -1,10 +1,12 @@
 require 'HTTParty'
 require 'json'
-require_relative 'roadmap'
+require_relative 'kele/roadmap'
+require_relative 'kele/messages'
 
 class Kele
   include HTTParty
   include Roadmap
+  include Messages
 
   def initialize(email, password)
     @base_url = "https://www.bloc.io/api/v1"
@@ -14,6 +16,7 @@ class Kele
     url = @base_url+'/users/me'
     response = self.class.get(url, headers: { "authorization" => @auth_token })
     user_data = JSON.parse(response.body)
+    @user_id = user_data["id"]
     @mentor_id = user_data["current_enrollment"]["mentor_id"]
     @roadmap_id = user_data["current_enrollment"]["roadmap_id"]
   end
@@ -22,7 +25,7 @@ class Kele
     url = @base_url+'/users/me'
     response = self.class.get(url, headers: { "authorization" => @auth_token })
     user_data = JSON.parse(response.body)
-    return "Name: #{user_data["name"]}; Email: #{user_data["email"]}"
+    return "#{user_data}\n Name: #{user_data["name"]}; Email: #{user_data["email"]}"
   end
 
   def get_mentor_availability
@@ -30,6 +33,5 @@ class Kele
     response = self.class.get(url, headers: { "authorization" => @auth_token }, body: {id: @mentor_id})
     mentor_availability = JSON.parse(response.body)
   end
-
 
 end
